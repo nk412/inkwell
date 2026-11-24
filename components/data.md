@@ -1,6 +1,6 @@
 # Data components
 
-Added when a page uses one of these classes, or calls `lineChart`, `heatmap` or `calendar`. Charts are greyscale with mono labels. Signal colours appear only where a change is good or bad. Label example data on the page.
+Added when a page uses one of these classes, or calls `lineChart`, `heatmap` or `calendar`. Charts are greyscale with mono labels; the categorical colours come in only when greyscale cannot tell the groups apart. Signal colours appear only where a change is good or bad. Label example data on the page.
 
 ### stat-tiles
 A row of key figures separated by hairlines. Each tile has a spaced label, a big number, a mono change line and a sparkline. The change is green when it is good and red when it is bad, whichever way the arrow points; add `is-good` or `is-bad`, or neither for neutral. Tiles go two-up on phones.
@@ -71,6 +71,33 @@ Chart.defaults.elements.line.borderColor = token('--ink');
 Chart.defaults.elements.line.borderWidth = 1.5;
 Chart.defaults.elements.point.radius = 0;
 Chart.defaults.plugins.legend.display = false;
+// Several groups that greyscale cannot separate: categorical colours, in order
+const series = [1, 2, 3, 4, 5, 6, 7, 8].map(i => token(`--cat-${i}`));
+```
+
+### categorical-colours
+Eight colours, `--cat-1` to `--cat-8`, for telling groups apart when greyscale cannot: network graphs, scatter plots, maps and charts with more groups than the greyscale treatments. Each has its own dark value. Rules 3.6 has the full rules. In short:
+- Give out slots in token order and never cycle. Past the eighth group, fold the rest into "Other" in `--shade-4`.
+- Values that mean gone or nothing (archived, none) take `--shade-3` and do not use up a slot.
+- Work out the assignment from the whole data set, not the filtered rows, so a filter never repaints the groups that remain.
+- Always add a legend, plus direct labels or a tooltip. Where any two groups can sit side by side, only the first three are safe on colour alone.
+- Labels and values stay in ink, with a coloured mark beside them. Signal colours never stand in for a group.
+- In SVG, set colours with `style` rather than attributes, so `var()` resolves.
+
+```js
+const SLOTS = [1, 2, 3, 4, 5, 6, 7, 8].map(i => `var(--cat-${i})`);
+const NEUTRAL = new Set(['archived', 'none']);
+// One colour per group, decided from every row (not the filtered ones), largest group first
+function groupColours(rows, groupOf) {
+  const counts = new Map();
+  rows.forEach(r => counts.set(groupOf(r), (counts.get(groupOf(r)) || 0) + 1));
+  const groups = [...counts.keys()].filter(g => !NEUTRAL.has(g)).sort((a, b) => counts.get(b) - counts.get(a));
+  const fits = groups.length <= SLOTS.length;
+  const slot = new Map(groups.map((g, i) => [g, i < SLOTS.length - (fits ? 0 : 1) ? SLOTS[i] : 'var(--shade-4)']));
+  return g => NEUTRAL.has(g) ? 'var(--shade-3)' : slot.get(g) || 'var(--shade-4)';
+}
+const colourOf = groupColours(ALL_ROWS, r => r.team);
+circle.style.fill = colourOf(row.team);
 ```
 
 ### bar-rows

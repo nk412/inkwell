@@ -26,6 +26,17 @@
   --shade-4: color-mix(in srgb, var(--ink) 62%, var(--bg));
   --shade-5: color-mix(in srgb, var(--ink) 88%, var(--bg));
 
+  /* Categorical colours: identity for groups when greyscale cannot tell them apart (rules 3.6).
+     Assign them in this order. The set was validated as a whole, so re-validate before changing or reordering it. */
+  --cat-1: #2e69b2;   /* blue-black */
+  --cat-2: #c96b7e;   /* rose */
+  --cat-3: #ac8924;   /* mustard */
+  --cat-4: #009390;   /* verdigris */
+  --cat-5: #c35f36;   /* sienna */
+  --cat-6: #7766b4;   /* violet */
+  --cat-7: #67863a;   /* moss */
+  --cat-8: #884783;   /* plum */
+
   --font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Lora', Georgia, 'Times New Roman', serif;
   --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -47,6 +58,14 @@
     --danger: #e5877d;
     --warning: #d9ad5b;
     --success: #7cc293;
+    --cat-1: #5d94da;
+    --cat-2: #cd677d;
+    --cat-3: #b4902e;
+    --cat-4: #0ca4a0;
+    --cat-5: #d3754f;
+    --cat-6: #8e7ecf;
+    --cat-7: #79994d;
+    --cat-8: #b570af;
     color-scheme: dark;
   }
 }
@@ -61,6 +80,14 @@
   --danger: #e5877d;
   --warning: #d9ad5b;
   --success: #7cc293;
+  --cat-1: #5d94da;
+  --cat-2: #cd677d;
+  --cat-3: #b4902e;
+  --cat-4: #0ca4a0;
+  --cat-5: #d3754f;
+  --cat-6: #8e7ecf;
+  --cat-7: #79994d;
+  --cat-8: #b570af;
   color-scheme: dark;
 }
 
@@ -281,6 +308,12 @@ main { display: flex; flex-direction: column; gap: 4rem; }
 }
 .section > h2 { margin-top: 0; display: flex; align-items: baseline; gap: 0.6rem; }
 .section h3 { margin-top: 2.4rem; }
+.section-note {
+  margin: -0.2rem 0 1.25rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+}
 
 .anchor {
   font-family: var(--font-mono);
@@ -1020,6 +1053,68 @@ hr { height: 1px; margin: 2.5rem 0 1.5rem; border: 0; background: var(--rule); }
 }
 .site-footer p { margin: 0; }
 
+/* ---------- Wide layout ---------- */
+/* `layout: wide` in the front matter: a left-aligned work surface for apps, dashboards and trackers,
+   instead of the centred reading column. Denser type, a one-row masthead and quieter section heads.
+   Prose inside still keeps to the measure. */
+:root[data-layout="wide"] { font-size: 16px; }
+[data-layout="wide"] .layout {
+  display: flex;
+  flex-direction: column;
+  max-width: 120rem;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem);
+}
+[data-layout="wide"] .masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem 2rem;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+[data-layout="wide"] .masthead h1 { font-size: 1.9rem; }
+[data-layout="wide"] .meta-row { grid-column: 2; grid-row: 1; margin: 0; }
+[data-layout="wide"] .lede { grid-column: 1 / -1; max-width: 64rem; font-size: 1rem; }
+[data-layout="wide"] .rail { position: static; align-self: stretch; width: auto; max-height: none; margin: 0 0 1.5rem; }
+[data-layout="wide"] .toc { padding: 0.9rem 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+[data-layout="wide"] .toc ol { columns: 3; }
+[data-layout="wide"] main { flex: 1 0 auto; gap: 2rem; }
+[data-layout="wide"] .section + .section { padding-top: 0; border-top: 0; }
+[data-layout="wide"] .section { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; column-gap: 1.25rem; }
+[data-layout="wide"] .section > * { grid-column: 1 / -1; }
+[data-layout="wide"] .section > h2 { grid-column: 1; margin-bottom: 0.7rem; font-size: 1.25rem; }
+[data-layout="wide"] .section > .section-note { grid-column: 2; align-self: baseline; margin: 0; font-size: 0.9rem; }
+[data-layout="wide"] .section > :is(h2, .section-note) + * { margin-top: 0; }
+[data-layout="wide"] .section > :last-child { margin-bottom: 0; }
+[data-layout="wide"] .section > :is(p, ul, ol, blockquote, dl):not(.section-note) { max-width: var(--measure); }
+[data-layout="wide"] .wide { width: 100%; }
+[data-layout="wide"] .full { width: auto; margin-left: 0; }
+[data-layout="wide"] .band-inner { padding: 0 1.25rem; }
+
+/* A fill section takes the rest of the window, and its block (usually an app shell) stretches to fit */
+[data-layout="wide"] .section.fill { flex: 1 0 26rem; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+[data-layout="wide"] .section.fill > .shell { height: auto; min-height: 0; margin: 0; }
+
+@media (max-width: 760px) {
+  [data-layout="wide"] .layout { min-height: 0; }
+  [data-layout="wide"] .section.fill { flex: none; }
+  [data-layout="wide"] .section.fill > .shell { height: 40rem; }
+  [data-layout="wide"] .section > .section-note { grid-column: 1 / -1; margin-bottom: 0.8rem; }
+  [data-layout="wide"] .toc ol { columns: 2; }
+}
+@media (max-width: 600px) {
+  [data-layout="wide"] .masthead { grid-template-columns: minmax(0, 1fr); }
+  [data-layout="wide"] .meta-row { grid-column: 1; grid-row: auto; }
+  [data-layout="wide"] .masthead h1 { font-size: 1.6rem; }
+}
+@media print {
+  :root[data-layout="wide"] { font-size: 11pt; }
+  [data-layout="wide"] .layout { display: block; min-height: 0; max-width: none; padding: 0; }
+}
+
 /* ---------- Small screens & motion ---------- */
 @media (max-width: 600px) {
   html { font-size: 16px; }
@@ -1045,6 +1140,14 @@ hr { height: 1px; margin: 2.5rem 0 1.5rem; border: 0; background: var(--rule); }
     --danger: #a33a2f;
     --warning: #8a5d0f;
     --success: #2f6f45;
+    --cat-1: #2e69b2;
+    --cat-2: #c96b7e;
+    --cat-3: #ac8924;
+    --cat-4: #009390;
+    --cat-5: #c35f36;
+    --cat-6: #7766b4;
+    --cat-7: #67863a;
+    --cat-8: #884783;
     color-scheme: light;
   }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

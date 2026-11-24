@@ -195,7 +195,7 @@ def split_css_blocks(css):
     return head, blocks
 
 
-def core_css(body, classes, rail, footer, prune):
+def core_css(body, classes, rail, footer, wide, prune):
     css = read(ASSETS / "css/core.css")
     if not prune:
         return css, []
@@ -216,6 +216,7 @@ def core_css(body, classes, rail, footer, prune):
         "Code diff": cls("diff"),
         "Alerts": cls("alert", "alerts"),
         "Footer": footer,
+        "Wide layout": wide,
     }
     head, blocks = split_css_blocks(css)
     kept, dropped = [head], []
@@ -292,9 +293,14 @@ def build(src, out=None, prune=True):
 
     body = re.sub(r"\{\{icon:([\w-]+)((?:\s+[\w-]+)*)\s*\}\}", lambda m: icon_svg(m.group(1), m.group(2)), body)
 
+    layout = meta.get("layout", "column").strip().lower()
+    if layout not in ("column", "wide"):
+        fail(f'unknown layout "{layout}" (use column or wide)')
+    wide = layout == "wide"
+
     sections = [m for m in SECTION_RE.finditer(body) if re.search(r'class="[^"]*\bsection\b', m.group(1))]
     flag = lambda key, auto: {"on": True, "off": False}.get(meta.get(key, "auto").lower(), auto)
-    rail = flag("rail", len(sections) >= 4)
+    rail = flag("rail", len(sections) >= 4 and not wide)
     numbers = flag("numbers", rail)
     footer = flag("footer", rail)
     body, toc = process_sections(body, numbers, warnings)
@@ -330,7 +336,7 @@ def build(src, out=None, prune=True):
                 fail(f'unknown script "{extra}"')
             scripts.append(extra)
 
-    css, dropped = core_css(body, classes, rail, footer, prune)
+    css, dropped = core_css(body, classes, rail, footer, wide, prune)
     css += "".join("\n" + read(ASSETS / f"css/{m}.css") for m in mods)
     if page_css.strip():
         css += "\n/* ---------- Page ---------- */\n" + page_css.strip() + "\n"
@@ -357,6 +363,7 @@ def build(src, out=None, prune=True):
     page = read(ASSETS / "skeleton.html")
     fills = {
         "@@LANG@@": meta.get("lang", "en"),
+        "@@HTML_ATTRS@@": ' data-layout="wide"' if wide else "",
         "@@TITLE@@": html.escape(meta["title"]),
         "@@CSS@@": css.strip(),
         "@@SPRITE@@": sprite.strip(),
@@ -381,7 +388,7 @@ def build(src, out=None, prune=True):
     out.write_text(page, encoding="utf-8")
 
     print(f"built {out} · {len(page.encode()) // 1024} KB · sections {len(toc)}"
-          f" · rail {'on' if rail else 'off'} · modules {', '.join(['core'] + mods)}"
+          f" · layout {layout} · rail {'on' if rail else 'off'} · modules {', '.join(['core'] + mods)}"
           f" · scripts {', '.join(scripts) or 'none'} · icons {len(used & known)}")
     if dropped:
         print(f"  unused core CSS left out: {', '.join(dropped)}")

@@ -62,7 +62,8 @@ date: today
 | `lede` | none | The italic intro under the title. Inline HTML allowed |
 | `meta` | none | Facts after the date on the meta line, separated with ` · ` |
 | `date` | `today` | `YYYY-MM-DD`, `today` or `none`. Shown as DD/MM/YYYY |
-| `rail` | `auto` | Contents rail and progress line. `auto` turns on at four or more sections |
+| `layout` | `column` | `column` is the centred reading column. `wide` is a left-aligned work surface for apps, dashboards and trackers (rules 5.7) |
+| `rail` | `auto` | Contents rail and progress line. `auto` turns on at four or more sections, except in the wide layout |
 | `numbers` | follows `rail` | Mono section numbers above each `h2` |
 | `footer` | follows `rail` | The "Back to top" footer |
 | `modules` | `auto` | CSS modules, detected from the classes used. Write `+data` to add one, or a list to fix them |
@@ -91,10 +92,10 @@ Each component's snippet shows how to call its function.
 
 ## Quick brief
 
-1. **Palette:** one ink on a pale ground, plus five shades of ink for data. Three signal colours (danger, warning, success) mark status only, always beside a glyph or a word.
+1. **Palette:** one ink on a pale ground, plus five shades of ink for data. Three signal colours (danger, warning, success) mark status only, always beside a glyph or a word. Eight categorical colours tell groups apart in data, and do nothing else.
 2. **Typefaces:** Lora for reading, Outfit 600 for headings and UI, DM Mono for metadata. Nothing else.
 3. **Four voices, one job each:** roman serif for content, italic serif for commentary, sans for structure, mono for metadata.
-4. **Column:** prose sits in a 36rem column. Tables, charts, tools and diagrams that need room go in `.wide`, which grows into the right margin up to 54rem. A `.band.full` spans the window.
+4. **Column:** prose sits in a 36rem column. Tables, charts, tools and diagrams that need room go in `.wide`, which grows into the right margin up to 54rem. A `.band.full` spans the window. Apps, dashboards and trackers can take `layout: wide` instead, where the page is left-aligned and wide and prose still keeps to 36rem.
 5. **Separation:** hairlines and space, not boxes. Filled surfaces only for code, callouts, alerts, selected states and panels.
 6. **Headings:** Outfit 600. Small labels use the spaced uppercase label style.
 7. **Interaction:** hovered links invert to ground-on-ink. Pressed controls fill with ink.
@@ -106,7 +107,19 @@ Each component's snippet shows how to call its function.
 13. **Motion:** small and optional; off under reduced motion.
 14. **Faint text** only for information that is repeated or not essential.
 15. **Words:** British English, plain and active. Labels say exactly what happens. Never claim an action that did not happen.
-16. **Data:** greyscale charts with mono labels. Label example data as example data on the page.
+16. **Data:** greyscale charts with mono labels. When greyscale cannot tell the groups apart (networks, scatter plots, maps, many series), use the categorical colours in order. Label example data as example data on the page.
+
+---
+
+## Bending the rules
+
+The rules serve reading. A page that is a tool rather than a document may bend some of them where that makes it work better. Say why in a comment beside the change.
+
+- **Width:** `layout: wide` gives apps, dashboards and trackers the whole window (rules 5.7).
+- **Colour for identity:** the categorical colours `--cat-1` to `--cat-8`, only when greyscale cannot tell the groups apart (rules 3.6).
+- **Component sizes:** a page `<style>` may change the size, spacing and layout of components to fit its content, using tokens only.
+
+Some rules never bend: tokens only and no raw colours, the three typefaces and four voices, signal colours kept for status and paired with a glyph or word, both themes, no ornament or shadows, accessibility and the writing rules. Rules section 15 has the detail.
 
 ---
 
@@ -118,8 +131,8 @@ Each component's snippet shows how to call its function.
 | `report` | Essay, article, report, plan | Pull quote, sidenotes, footnotes, figures, timeline, tables |
 | `docs` | Documentation, guide | Steps, code tabs, diff, callouts, comparison table, disclosure |
 | `tool` | Calculator, converter, checker | Split view, form controls, big number, signal results |
-| `app` | Small app or tool | App shell, segmented control, side filters, board, compact table, dialog |
-| `dashboard` | Metrics, tracking | Stat tiles, sparklines, line chart, heatmap band, calendar, compact table |
+| `app` | Small app or tool, in the wide layout | App shell, segmented control, side filters, board, compact table, dialog |
+| `dashboard` | Metrics, tracking, in the wide layout | Stat tiles, sparklines, line chart, heatmap band, calendar, compact table |
 | `form` | Form or wizard | Step indicator, fields with inline errors, selectable cards, review rows |
 | `diagram` | Diagram or explainer | Mermaid diagram, steps, callouts |
 

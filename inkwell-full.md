@@ -62,7 +62,8 @@ date: today
 | `lede` | none | The italic intro under the title. Inline HTML allowed |
 | `meta` | none | Facts after the date on the meta line, separated with ` · ` |
 | `date` | `today` | `YYYY-MM-DD`, `today` or `none`. Shown as DD/MM/YYYY |
-| `rail` | `auto` | Contents rail and progress line. `auto` turns on at four or more sections |
+| `layout` | `column` | `column` is the centred reading column. `wide` is a left-aligned work surface for apps, dashboards and trackers (rules 5.7) |
+| `rail` | `auto` | Contents rail and progress line. `auto` turns on at four or more sections, except in the wide layout |
 | `numbers` | follows `rail` | Mono section numbers above each `h2` |
 | `footer` | follows `rail` | The "Back to top" footer |
 | `modules` | `auto` | CSS modules, detected from the classes used. Write `+data` to add one, or a list to fix them |
@@ -91,10 +92,10 @@ Each component's snippet shows how to call its function.
 
 ## Quick brief
 
-1. **Palette:** one ink on a pale ground, plus five shades of ink for data. Three signal colours (danger, warning, success) mark status only, always beside a glyph or a word.
+1. **Palette:** one ink on a pale ground, plus five shades of ink for data. Three signal colours (danger, warning, success) mark status only, always beside a glyph or a word. Eight categorical colours tell groups apart in data, and do nothing else.
 2. **Typefaces:** Lora for reading, Outfit 600 for headings and UI, DM Mono for metadata. Nothing else.
 3. **Four voices, one job each:** roman serif for content, italic serif for commentary, sans for structure, mono for metadata.
-4. **Column:** prose sits in a 36rem column. Tables, charts, tools and diagrams that need room go in `.wide`, which grows into the right margin up to 54rem. A `.band.full` spans the window.
+4. **Column:** prose sits in a 36rem column. Tables, charts, tools and diagrams that need room go in `.wide`, which grows into the right margin up to 54rem. A `.band.full` spans the window. Apps, dashboards and trackers can take `layout: wide` instead, where the page is left-aligned and wide and prose still keeps to 36rem.
 5. **Separation:** hairlines and space, not boxes. Filled surfaces only for code, callouts, alerts, selected states and panels.
 6. **Headings:** Outfit 600. Small labels use the spaced uppercase label style.
 7. **Interaction:** hovered links invert to ground-on-ink. Pressed controls fill with ink.
@@ -106,7 +107,19 @@ Each component's snippet shows how to call its function.
 13. **Motion:** small and optional; off under reduced motion.
 14. **Faint text** only for information that is repeated or not essential.
 15. **Words:** British English, plain and active. Labels say exactly what happens. Never claim an action that did not happen.
-16. **Data:** greyscale charts with mono labels. Label example data as example data on the page.
+16. **Data:** greyscale charts with mono labels. When greyscale cannot tell the groups apart (networks, scatter plots, maps, many series), use the categorical colours in order. Label example data as example data on the page.
+
+---
+
+## Bending the rules
+
+The rules serve reading. A page that is a tool rather than a document may bend some of them where that makes it work better. Say why in a comment beside the change.
+
+- **Width:** `layout: wide` gives apps, dashboards and trackers the whole window (rules 5.7).
+- **Colour for identity:** the categorical colours `--cat-1` to `--cat-8`, only when greyscale cannot tell the groups apart (rules 3.6).
+- **Component sizes:** a page `<style>` may change the size, spacing and layout of components to fit its content, using tokens only.
+
+Some rules never bend: tokens only and no raw colours, the three typefaces and four voices, signal colours kept for status and paired with a glyph or word, both themes, no ornament or shadows, accessibility and the writing rules. Rules section 15 has the detail.
 
 ---
 
@@ -118,8 +131,8 @@ Each component's snippet shows how to call its function.
 | `report` | Essay, article, report, plan | Pull quote, sidenotes, footnotes, figures, timeline, tables |
 | `docs` | Documentation, guide | Steps, code tabs, diff, callouts, comparison table, disclosure |
 | `tool` | Calculator, converter, checker | Split view, form controls, big number, signal results |
-| `app` | Small app or tool | App shell, segmented control, side filters, board, compact table, dialog |
-| `dashboard` | Metrics, tracking | Stat tiles, sparklines, line chart, heatmap band, calendar, compact table |
+| `app` | Small app or tool, in the wide layout | App shell, segmented control, side filters, board, compact table, dialog |
+| `dashboard` | Metrics, tracking, in the wide layout | Stat tiles, sparklines, line chart, heatmap band, calendar, compact table |
 | `form` | Form or wizard | Step indicator, fields with inline errors, selectable cards, review rows |
 | `diagram` | Diagram or explainer | Mermaid diagram, steps, callouts |
 
@@ -172,6 +185,7 @@ The full rules behind `DESIGN.md`. Read the section you need; there is no need t
 12. Writing
 13. Environment and checks
 14. Do and don't
+15. Bending the rules
 
 ---
 
@@ -195,7 +209,7 @@ Reference points: personal essay sites, literary journals, good technical docume
 2. **Four voices, one job each.** See 4.2. A voice never borrows another's job.
 3. **Type does the work.** Use size, weight and case for hierarchy before reaching for boxes, icons or colour.
 4. **Rules, not boxes.** Separate with 1px hairlines. Fill a surface only to set apart the one element that needs it.
-5. **A reading column, with room to breathe.** Text stays at about 70 characters. Wide content grows into the margin instead of widening the text.
+5. **A reading column, with room to breathe.** Text stays at about 70 characters. Wide content grows into the margin instead of widening the text. Apps, dashboards and trackers may take the wide layout (5.7), where prose still keeps to the measure.
 6. **State lives in form.** Fill, hatching, dashes and glyphs carry state, and colour reinforces it.
 7. **Inversion is the interaction colour.** Hovered links, pressed toggles and primary buttons flip to ground-on-ink.
 8. **Complete at rest.** Everything meant to be read is visible on first paint. Motion is brief and never hides content.
@@ -271,6 +285,33 @@ Rules:
 - `body` always has `background: var(--bg)`.
 - Dark is not an inversion. The ground is a soft near-black and the ink a warm off-white, never `#000` or `#fff`.
 - Print is always black on white (`build.py snippet print`).
+
+### 3.6 Categorical colours
+
+The one exception to greyscale data. Eight ink-toned colours tell groups apart when greyscale cannot: network graphs, scatter plots, maps, and charts with more groups than the five greyscale treatments in section 9.
+
+| Token | Light | Dark | Name |
+|---|---|---|---|
+| `--cat-1` | `#2e69b2` | `#5d94da` | Blue-black |
+| `--cat-2` | `#c96b7e` | `#cd677d` | Rose |
+| `--cat-3` | `#ac8924` | `#b4902e` | Mustard |
+| `--cat-4` | `#009390` | `#0ca4a0` | Verdigris |
+| `--cat-5` | `#c35f36` | `#d3754f` | Sienna |
+| `--cat-6` | `#7766b4` | `#8e7ecf` | Violet |
+| `--cat-7` | `#67863a` | `#79994d` | Moss |
+| `--cat-8` | `#884783` | `#b570af` | Plum |
+
+Rules:
+
+- **Identity only.** They say which group a mark belongs to. Never use them for status, emphasis, links, headings or decoration.
+- **Only when greyscale fails.** If shades, dashes and hatching can separate the groups, use those.
+- **Fixed order, never cycled.** Give out slots from `--cat-1` up. Past the eighth group, fold the rest into "Other" in `--shade-4`.
+- **Inactive values stay grey.** Values that mean gone or nothing (archived, none) take `--shade-3` and do not use up a slot.
+- **Colour follows the entity.** Work out the assignment from the whole data set, not the filtered rows, so a filter never repaints the groups that remain.
+- **Never colour alone.** Always add a legend, plus direct labels or a tooltip. When any two groups can sit side by side (scatter plots, maps, networks), only the first three are safe on colour alone.
+- **Text stays in ink.** Set labels and values in the text tokens, with a coloured mark beside them.
+- **Signal colours are not series.** Keep them for status, paired with a glyph or word, even in a coloured chart.
+- **Validated as a set.** In both themes, every colour sits in a set lightness band, has enough chroma to read as a colour, and has at least 3:1 contrast on the ground. Neighbouring slots stay apart under protanopia and deuteranopia (OKLab ΔE ≥ 8) and under normal vision (ΔE ≥ 15). The first three also stay apart in every pairing. Re-validate before changing or reordering them.
 
 ---
 
@@ -399,7 +440,7 @@ The maths uses `--vw`, which is `100vw` minus the scrollbar width measured by th
 ### 5.5 Tool layouts
 
 - **Split view** (`.split`): controls in a left column (15rem) and live output on the right, inside a hairline frame. It stacks below 760px. Use it for calculators, converters, generators and checkers.
-- **App shell** (`.shell`): for tools that fill the window. A slim header bar (breadcrumbs left, view switch right), a side panel (11rem) for filters or navigation, and a scrolling work area. As a whole page, give it `height: 100%` on `html` and `body` (never `100vh`) and drop the masthead to a one-line header. Inside a document, frame it at a fixed height (25rem).
+- **App shell** (`.shell`): for tools that fill the window. A slim header bar (breadcrumbs left, view switch right), a side panel (11rem) for filters or navigation, and a scrolling work area. As a whole page, give it `height: 100%` on `html` and `body` (never `100vh`) and drop the masthead to a one-line header, or use the wide layout with the shell in a `fill` section (5.7). Inside a document, frame it at a fixed height (25rem).
 - **Compact density:** app shells, compact tables and boards use smaller type (0.8–0.85rem), tighter padding and mono metadata at 0.64–0.7rem.
 
 ### 5.6 Spacing scale
@@ -417,6 +458,19 @@ The maths uses `--vw`, which is `100vw` minus the scrollbar width measured by th
 | 6 | Page bottom padding |
 
 Lay out sibling groups with flex or grid and `gap`, not per-element margins.
+
+### 5.7 Wide layout
+
+`layout: wide` in the front matter replaces the centred reading column with a left-aligned work surface. Use it for apps, dashboards, trackers and other tools that people work in rather than read. Keep documents in the column.
+
+- **Frame:** the page fills the window up to 120rem, with a `clamp(1rem, 2.5vw, 2.5rem)` side gutter and 1.5rem top and bottom.
+- **Density:** root type is 16px at every width.
+- **Masthead:** one row, with the title on the left and the meta line and toggle on the right. The lede sits underneath, up to 64rem, and a hairline closes the masthead.
+- **Sections:** separated by a 2rem gap alone, with no hairline. Headings drop to 1.25rem. A `.section-note`, an italic muted line, sits beside the heading, and wraps under it below 760px.
+- **Prose:** paragraphs, lists, quotes and description lists inside a section still stop at the 36rem measure.
+- **Widths:** `.wide` fills the width and `.full` spans the frame, so neither is needed.
+- **Fill:** give a section `fill` and it takes the rest of the window height. Its block, usually an app shell, stretches to fit and scrolls inside, so the page itself does not scroll. Give a fill section a heading, an optional note and one block. Below 760px it falls back to a fixed 40rem shell.
+- **Contents:** the rail is off by default. If it is turned on, it sits inline under the masthead.
 
 ---
 
@@ -464,7 +518,7 @@ Core CSS is on every page. The builder adds a module only when the page uses one
 
 ## 9. Charts and data
 
-- **Draw in greyscale.** Marks are `--ink`; tracks and grids `--rule`; labels mono meta.
+- **Draw in greyscale.** Marks are `--ink`; tracks and grids `--rule`; labels mono meta. When greyscale cannot tell the groups apart, use the categorical colours (3.6).
 - **One scale per chart.** Label only values the chart reaches.
 - **Distinguishing series without colour:**
   1. `--ink` solid;
@@ -568,9 +622,9 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 
 **Before delivering a page:**
 1. The build prints no warnings.
-2. Prose stays in the column, and wide content uses `.wide`.
+2. Prose stays in the column, and wide content uses `.wide` (or the page uses `layout: wide`).
 3. Every signal colour sits beside a glyph or a word.
-4. No raw colours in page CSS; tokens only.
+4. No raw colours in page CSS; tokens only. Any rule the page bends has a comment saying why.
 5. Example data is labelled.
 6. If you can render the page, check it at 390px and 1400px, in both themes, by keyboard, and with reduced motion.
 
@@ -579,10 +633,12 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 | Do | Don't |
 |---|---|
 | Use one ink at varying strengths | Add an accent colour, gradients or brand hues |
+| Use the categorical colours when greyscale cannot tell groups apart | Colour groups that greyscale already separates, or use a signal colour as a series |
 | Use signal colours for status, with a glyph or word | Colour links, headings, icons or decoration |
 | Separate with hairlines and whitespace | Wrap everything in cards with shadows |
 | Keep prose in the 36rem column | Stretch text to fill wide screens |
 | Let wide content grow into the right margin | Centre wide blocks over the contents rail |
+| Give apps, dashboards and trackers `layout: wide` | Squeeze a tool into the reading column, or centre a narrow heading over a wide block |
 | Use Outfit 600 for every heading | Mix heading weights or set headings in the serif |
 | Use italic Lora for commentary | Set whole passages of content in italic |
 | Put metadata in mono | Use mono for prose or headings |
@@ -596,6 +652,34 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 | End long pages with "Back to top" alone | Add colophons, credits or "made with" lines |
 | Start the first paragraph plainly | Add drop caps or other ornaments |
 | Label example data | Present invented figures as real |
+
+---
+
+## 15. Bending the rules
+
+These rules serve reading. A page that is a tool rather than a document may bend some of them where that makes it work better.
+
+**May bend:**
+
+- **Width and density.** `layout: wide` (5.7) for apps, dashboards and trackers.
+- **Colour for identity.** The categorical colours (3.6), only when greyscale cannot tell the groups apart.
+- **Component sizes.** A page `<style>` may change the size, spacing and layout of components to fit its content: wrap a column, shorten a tile, widen a side sheet.
+
+**Never bends:**
+
+- Tokens only. No raw colours in page CSS or inline styles.
+- The three typefaces, and the four voices with one job each.
+- Signal colours are for status only, beside a glyph or a word.
+- Light and dark get equal care.
+- No ornament, gradients or brand colour, and no shadows except on dialogs.
+- Accessibility (section 11) and the writing rules (section 12).
+
+**How to bend:**
+
+1. Bend the fewest rules that solve the problem, and keep everything else as written.
+2. Say why in a comment beside the change, for example `/* Graph: categorical colours, because six sections overlap in a network */`.
+3. Check the result in both themes and at phone width, as for any page.
+4. If the same bend turns up in more than one page, make it part of the system here, as `layout: wide` and the categorical colours were.
 
 
 ---
@@ -614,11 +698,12 @@ A three-icon control beside the date (Auto, Light, Dark); the builder adds it to
 The contents rail, progress line, section numbers and footer, all generated by the builder. They turn on automatically at four or more sections, or with `rail: on`. The rail lists each section's `h2`. On wide screens it sits sticky in the left margin; below 1100px it sits inline under the masthead. The footer holds only "Back to top".
 
 ### section
-Wrap each part of the page in a section with an `h2`; the builder adds the id, number and `aria-labelledby`. Use `h3` for subsections. Keep prose in the column; give tables, charts and tools that need room the `wide` class.
+Wrap each part of the page in a section with an `h2`; the builder adds the id, number and `aria-labelledby`. Use `h3` for subsections. Keep prose in the column; give tables, charts and tools that need room the `wide` class. A `.section-note` straight after the heading is a short italic line about how to use the section; in the wide layout it sits beside the heading.
 
 ```html
 <section class="section" id="costs">
   <h2>Costs</h2>
+  <p class="section-note">Figures are monthly, in pounds.</p>
   <p>Opening paragraph.</p>
   <h3>Subsection</h3>
   <p>…</p>
@@ -988,12 +1073,34 @@ Mono `[1]` references with notes at the end after a rule, each with a ↩ back-l
 ```
 
 ### widths
-Three widths: text (the default 36rem column), `.wide` and `.full`. `.wide` keeps its left edge on the column and grows right up to 54rem; use it for tables, charts, tools and diagrams. `.band.full` spans the window on a surface, and `.band-inner` lines its content up with the text. Below 760px everything sits in the column.
+Three widths: text (the default 36rem column), `.wide` and `.full`. `.wide` keeps its left edge on the column and grows right up to 54rem; use it for tables, charts, tools and diagrams. `.band.full` spans the window on a surface, and `.band-inner` lines its content up with the text. Below 760px everything sits in the column. In the wide layout, `.wide` and `.full` simply fill the frame.
 
 ```html
 <div class="table-wrap wide">…</div>
 <figure class="wide">…</figure>
 <div class="band full"><div class="band-inner">…</div></div>
+```
+
+### wide-layout
+`layout: wide` in the front matter swaps the centred reading column for a left-aligned work surface up to 120rem wide. Use it for apps, dashboards and trackers, not documents. The root type is 16px, the masthead is one row with a hairline under it, section headings are smaller and the rail is off by default. Prose in a section still stops at the 36rem measure, and `.wide` simply fills the width. Give a section `fill` and its app shell takes the rest of the window, so the work area scrolls inside it and the page does not; below 760px the shell falls back to a fixed height. A fill section holds a heading, an optional `.section-note` and one block.
+
+```html
+<!--
+title: Repo tracker
+lede: Every repo, how it ships and where it goes.
+layout: wide
+-->
+
+<section class="section" id="overview">
+  <h2>Overview</h2>
+  <p class="section-note">Press a figure to show only those repos.</p>
+  <div class="stats">…</div>
+</section>
+
+<section class="section fill" id="repos">
+  <h2>Repos</h2>
+  <div class="shell">…</div>
+</section>
 ```
 
 ### icons
@@ -1020,7 +1127,7 @@ Nothing to write.
 
 # Data components
 
-Added when a page uses one of these classes, or calls `lineChart`, `heatmap` or `calendar`. Charts are greyscale with mono labels. Signal colours appear only where a change is good or bad. Label example data on the page.
+Added when a page uses one of these classes, or calls `lineChart`, `heatmap` or `calendar`. Charts are greyscale with mono labels; the categorical colours come in only when greyscale cannot tell the groups apart. Signal colours appear only where a change is good or bad. Label example data on the page.
 
 ### stat-tiles
 A row of key figures separated by hairlines. Each tile has a spaced label, a big number, a mono change line and a sparkline. The change is green when it is good and red when it is bad, whichever way the arrow points; add `is-good` or `is-bad`, or neither for neutral. Tiles go two-up on phones.
@@ -1091,6 +1198,33 @@ Chart.defaults.elements.line.borderColor = token('--ink');
 Chart.defaults.elements.line.borderWidth = 1.5;
 Chart.defaults.elements.point.radius = 0;
 Chart.defaults.plugins.legend.display = false;
+// Several groups that greyscale cannot separate: categorical colours, in order
+const series = [1, 2, 3, 4, 5, 6, 7, 8].map(i => token(`--cat-${i}`));
+```
+
+### categorical-colours
+Eight colours, `--cat-1` to `--cat-8`, for telling groups apart when greyscale cannot: network graphs, scatter plots, maps and charts with more groups than the greyscale treatments. Each has its own dark value. Rules 3.6 has the full rules. In short:
+- Give out slots in token order and never cycle. Past the eighth group, fold the rest into "Other" in `--shade-4`.
+- Values that mean gone or nothing (archived, none) take `--shade-3` and do not use up a slot.
+- Work out the assignment from the whole data set, not the filtered rows, so a filter never repaints the groups that remain.
+- Always add a legend, plus direct labels or a tooltip. Where any two groups can sit side by side, only the first three are safe on colour alone.
+- Labels and values stay in ink, with a coloured mark beside them. Signal colours never stand in for a group.
+- In SVG, set colours with `style` rather than attributes, so `var()` resolves.
+
+```js
+const SLOTS = [1, 2, 3, 4, 5, 6, 7, 8].map(i => `var(--cat-${i})`);
+const NEUTRAL = new Set(['archived', 'none']);
+// One colour per group, decided from every row (not the filtered ones), largest group first
+function groupColours(rows, groupOf) {
+  const counts = new Map();
+  rows.forEach(r => counts.set(groupOf(r), (counts.get(groupOf(r)) || 0) + 1));
+  const groups = [...counts.keys()].filter(g => !NEUTRAL.has(g)).sort((a, b) => counts.get(b) - counts.get(a));
+  const fits = groups.length <= SLOTS.length;
+  const slot = new Map(groups.map((g, i) => [g, i < SLOTS.length - (fits ? 0 : 1) ? SLOTS[i] : 'var(--shade-4)']));
+  return g => NEUTRAL.has(g) ? 'var(--shade-3)' : slot.get(g) || 'var(--shade-4)';
+}
+const colourOf = groupColours(ALL_ROWS, r => r.team);
+circle.style.fill = colourOf(row.team);
 ```
 
 ### bar-rows
@@ -1485,6 +1619,17 @@ setTimeout(() => setLoading($('#card'), false), 1500);
   --shade-4: color-mix(in srgb, var(--ink) 62%, var(--bg));
   --shade-5: color-mix(in srgb, var(--ink) 88%, var(--bg));
 
+  /* Categorical colours: identity for groups when greyscale cannot tell them apart (rules 3.6).
+     Assign them in this order. The set was validated as a whole, so re-validate before changing or reordering it. */
+  --cat-1: #2e69b2;   /* blue-black */
+  --cat-2: #c96b7e;   /* rose */
+  --cat-3: #ac8924;   /* mustard */
+  --cat-4: #009390;   /* verdigris */
+  --cat-5: #c35f36;   /* sienna */
+  --cat-6: #7766b4;   /* violet */
+  --cat-7: #67863a;   /* moss */
+  --cat-8: #884783;   /* plum */
+
   --font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Lora', Georgia, 'Times New Roman', serif;
   --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -1506,6 +1651,14 @@ setTimeout(() => setLoading($('#card'), false), 1500);
     --danger: #e5877d;
     --warning: #d9ad5b;
     --success: #7cc293;
+    --cat-1: #5d94da;
+    --cat-2: #cd677d;
+    --cat-3: #b4902e;
+    --cat-4: #0ca4a0;
+    --cat-5: #d3754f;
+    --cat-6: #8e7ecf;
+    --cat-7: #79994d;
+    --cat-8: #b570af;
     color-scheme: dark;
   }
 }
@@ -1520,6 +1673,14 @@ setTimeout(() => setLoading($('#card'), false), 1500);
   --danger: #e5877d;
   --warning: #d9ad5b;
   --success: #7cc293;
+  --cat-1: #5d94da;
+  --cat-2: #cd677d;
+  --cat-3: #b4902e;
+  --cat-4: #0ca4a0;
+  --cat-5: #d3754f;
+  --cat-6: #8e7ecf;
+  --cat-7: #79994d;
+  --cat-8: #b570af;
   color-scheme: dark;
 }
 
@@ -1740,6 +1901,12 @@ main { display: flex; flex-direction: column; gap: 4rem; }
 }
 .section > h2 { margin-top: 0; display: flex; align-items: baseline; gap: 0.6rem; }
 .section h3 { margin-top: 2.4rem; }
+.section-note {
+  margin: -0.2rem 0 1.25rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--muted);
+}
 
 .anchor {
   font-family: var(--font-mono);
@@ -2479,6 +2646,68 @@ hr { height: 1px; margin: 2.5rem 0 1.5rem; border: 0; background: var(--rule); }
 }
 .site-footer p { margin: 0; }
 
+/* ---------- Wide layout ---------- */
+/* `layout: wide` in the front matter: a left-aligned work surface for apps, dashboards and trackers,
+   instead of the centred reading column. Denser type, a one-row masthead and quieter section heads.
+   Prose inside still keeps to the measure. */
+:root[data-layout="wide"] { font-size: 16px; }
+[data-layout="wide"] .layout {
+  display: flex;
+  flex-direction: column;
+  max-width: 120rem;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem);
+}
+[data-layout="wide"] .masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem 2rem;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+[data-layout="wide"] .masthead h1 { font-size: 1.9rem; }
+[data-layout="wide"] .meta-row { grid-column: 2; grid-row: 1; margin: 0; }
+[data-layout="wide"] .lede { grid-column: 1 / -1; max-width: 64rem; font-size: 1rem; }
+[data-layout="wide"] .rail { position: static; align-self: stretch; width: auto; max-height: none; margin: 0 0 1.5rem; }
+[data-layout="wide"] .toc { padding: 0.9rem 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+[data-layout="wide"] .toc ol { columns: 3; }
+[data-layout="wide"] main { flex: 1 0 auto; gap: 2rem; }
+[data-layout="wide"] .section + .section { padding-top: 0; border-top: 0; }
+[data-layout="wide"] .section { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; column-gap: 1.25rem; }
+[data-layout="wide"] .section > * { grid-column: 1 / -1; }
+[data-layout="wide"] .section > h2 { grid-column: 1; margin-bottom: 0.7rem; font-size: 1.25rem; }
+[data-layout="wide"] .section > .section-note { grid-column: 2; align-self: baseline; margin: 0; font-size: 0.9rem; }
+[data-layout="wide"] .section > :is(h2, .section-note) + * { margin-top: 0; }
+[data-layout="wide"] .section > :last-child { margin-bottom: 0; }
+[data-layout="wide"] .section > :is(p, ul, ol, blockquote, dl):not(.section-note) { max-width: var(--measure); }
+[data-layout="wide"] .wide { width: 100%; }
+[data-layout="wide"] .full { width: auto; margin-left: 0; }
+[data-layout="wide"] .band-inner { padding: 0 1.25rem; }
+
+/* A fill section takes the rest of the window, and its block (usually an app shell) stretches to fit */
+[data-layout="wide"] .section.fill { flex: 1 0 26rem; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+[data-layout="wide"] .section.fill > .shell { height: auto; min-height: 0; margin: 0; }
+
+@media (max-width: 760px) {
+  [data-layout="wide"] .layout { min-height: 0; }
+  [data-layout="wide"] .section.fill { flex: none; }
+  [data-layout="wide"] .section.fill > .shell { height: 40rem; }
+  [data-layout="wide"] .section > .section-note { grid-column: 1 / -1; margin-bottom: 0.8rem; }
+  [data-layout="wide"] .toc ol { columns: 2; }
+}
+@media (max-width: 600px) {
+  [data-layout="wide"] .masthead { grid-template-columns: minmax(0, 1fr); }
+  [data-layout="wide"] .meta-row { grid-column: 1; grid-row: auto; }
+  [data-layout="wide"] .masthead h1 { font-size: 1.6rem; }
+}
+@media print {
+  :root[data-layout="wide"] { font-size: 11pt; }
+  [data-layout="wide"] .layout { display: block; min-height: 0; max-width: none; padding: 0; }
+}
+
 /* ---------- Small screens & motion ---------- */
 @media (max-width: 600px) {
   html { font-size: 16px; }
@@ -2504,6 +2733,14 @@ hr { height: 1px; margin: 2.5rem 0 1.5rem; border: 0; background: var(--rule); }
     --danger: #a33a2f;
     --warning: #8a5d0f;
     --success: #2f6f45;
+    --cat-1: #2e69b2;
+    --cat-2: #c96b7e;
+    --cat-3: #ac8924;
+    --cat-4: #009390;
+    --cat-5: #c35f36;
+    --cat-6: #7766b4;
+    --cat-7: #67863a;
+    --cat-8: #884783;
     color-scheme: light;
   }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -3283,7 +3520,7 @@ input[type="color"]::-moz-color-swatch { border: 0; border-radius: 2px; }
 
 ```html
 <!DOCTYPE html>
-<html lang="@@LANG@@">
+<html lang="@@LANG@@"@@HTML_ATTRS@@>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

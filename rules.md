@@ -16,6 +16,7 @@ The full rules behind `DESIGN.md`. Read the section you need; there is no need t
 12. Writing
 13. Environment and checks
 14. Do and don't
+15. Bending the rules
 
 ---
 
@@ -39,7 +40,7 @@ Reference points: personal essay sites, literary journals, good technical docume
 2. **Four voices, one job each.** See 4.2. A voice never borrows another's job.
 3. **Type does the work.** Use size, weight and case for hierarchy before reaching for boxes, icons or colour.
 4. **Rules, not boxes.** Separate with 1px hairlines. Fill a surface only to set apart the one element that needs it.
-5. **A reading column, with room to breathe.** Text stays at about 70 characters. Wide content grows into the margin instead of widening the text.
+5. **A reading column, with room to breathe.** Text stays at about 70 characters. Wide content grows into the margin instead of widening the text. Apps, dashboards and trackers may take the wide layout (5.7), where prose still keeps to the measure.
 6. **State lives in form.** Fill, hatching, dashes and glyphs carry state, and colour reinforces it.
 7. **Inversion is the interaction colour.** Hovered links, pressed toggles and primary buttons flip to ground-on-ink.
 8. **Complete at rest.** Everything meant to be read is visible on first paint. Motion is brief and never hides content.
@@ -115,6 +116,33 @@ Rules:
 - `body` always has `background: var(--bg)`.
 - Dark is not an inversion. The ground is a soft near-black and the ink a warm off-white, never `#000` or `#fff`.
 - Print is always black on white (`build.py snippet print`).
+
+### 3.6 Categorical colours
+
+The one exception to greyscale data. Eight ink-toned colours tell groups apart when greyscale cannot: network graphs, scatter plots, maps, and charts with more groups than the five greyscale treatments in section 9.
+
+| Token | Light | Dark | Name |
+|---|---|---|---|
+| `--cat-1` | `#2e69b2` | `#5d94da` | Blue-black |
+| `--cat-2` | `#c96b7e` | `#cd677d` | Rose |
+| `--cat-3` | `#ac8924` | `#b4902e` | Mustard |
+| `--cat-4` | `#009390` | `#0ca4a0` | Verdigris |
+| `--cat-5` | `#c35f36` | `#d3754f` | Sienna |
+| `--cat-6` | `#7766b4` | `#8e7ecf` | Violet |
+| `--cat-7` | `#67863a` | `#79994d` | Moss |
+| `--cat-8` | `#884783` | `#b570af` | Plum |
+
+Rules:
+
+- **Identity only.** They say which group a mark belongs to. Never use them for status, emphasis, links, headings or decoration.
+- **Only when greyscale fails.** If shades, dashes and hatching can separate the groups, use those.
+- **Fixed order, never cycled.** Give out slots from `--cat-1` up. Past the eighth group, fold the rest into "Other" in `--shade-4`.
+- **Inactive values stay grey.** Values that mean gone or nothing (archived, none) take `--shade-3` and do not use up a slot.
+- **Colour follows the entity.** Work out the assignment from the whole data set, not the filtered rows, so a filter never repaints the groups that remain.
+- **Never colour alone.** Always add a legend, plus direct labels or a tooltip. When any two groups can sit side by side (scatter plots, maps, networks), only the first three are safe on colour alone.
+- **Text stays in ink.** Set labels and values in the text tokens, with a coloured mark beside them.
+- **Signal colours are not series.** Keep them for status, paired with a glyph or word, even in a coloured chart.
+- **Validated as a set.** In both themes, every colour sits in a set lightness band, has enough chroma to read as a colour, and has at least 3:1 contrast on the ground. Neighbouring slots stay apart under protanopia and deuteranopia (OKLab ΔE ≥ 8) and under normal vision (ΔE ≥ 15). The first three also stay apart in every pairing. Re-validate before changing or reordering them.
 
 ---
 
@@ -243,7 +271,7 @@ The maths uses `--vw`, which is `100vw` minus the scrollbar width measured by th
 ### 5.5 Tool layouts
 
 - **Split view** (`.split`): controls in a left column (15rem) and live output on the right, inside a hairline frame. It stacks below 760px. Use it for calculators, converters, generators and checkers.
-- **App shell** (`.shell`): for tools that fill the window. A slim header bar (breadcrumbs left, view switch right), a side panel (11rem) for filters or navigation, and a scrolling work area. As a whole page, give it `height: 100%` on `html` and `body` (never `100vh`) and drop the masthead to a one-line header. Inside a document, frame it at a fixed height (25rem).
+- **App shell** (`.shell`): for tools that fill the window. A slim header bar (breadcrumbs left, view switch right), a side panel (11rem) for filters or navigation, and a scrolling work area. As a whole page, give it `height: 100%` on `html` and `body` (never `100vh`) and drop the masthead to a one-line header, or use the wide layout with the shell in a `fill` section (5.7). Inside a document, frame it at a fixed height (25rem).
 - **Compact density:** app shells, compact tables and boards use smaller type (0.8–0.85rem), tighter padding and mono metadata at 0.64–0.7rem.
 
 ### 5.6 Spacing scale
@@ -261,6 +289,19 @@ The maths uses `--vw`, which is `100vw` minus the scrollbar width measured by th
 | 6 | Page bottom padding |
 
 Lay out sibling groups with flex or grid and `gap`, not per-element margins.
+
+### 5.7 Wide layout
+
+`layout: wide` in the front matter replaces the centred reading column with a left-aligned work surface. Use it for apps, dashboards, trackers and other tools that people work in rather than read. Keep documents in the column.
+
+- **Frame:** the page fills the window up to 120rem, with a `clamp(1rem, 2.5vw, 2.5rem)` side gutter and 1.5rem top and bottom.
+- **Density:** root type is 16px at every width.
+- **Masthead:** one row, with the title on the left and the meta line and toggle on the right. The lede sits underneath, up to 64rem, and a hairline closes the masthead.
+- **Sections:** separated by a 2rem gap alone, with no hairline. Headings drop to 1.25rem. A `.section-note`, an italic muted line, sits beside the heading, and wraps under it below 760px.
+- **Prose:** paragraphs, lists, quotes and description lists inside a section still stop at the 36rem measure.
+- **Widths:** `.wide` fills the width and `.full` spans the frame, so neither is needed.
+- **Fill:** give a section `fill` and it takes the rest of the window height. Its block, usually an app shell, stretches to fit and scrolls inside, so the page itself does not scroll. Give a fill section a heading, an optional note and one block. Below 760px it falls back to a fixed 40rem shell.
+- **Contents:** the rail is off by default. If it is turned on, it sits inline under the masthead.
 
 ---
 
@@ -308,7 +349,7 @@ Core CSS is on every page. The builder adds a module only when the page uses one
 
 ## 9. Charts and data
 
-- **Draw in greyscale.** Marks are `--ink`; tracks and grids `--rule`; labels mono meta.
+- **Draw in greyscale.** Marks are `--ink`; tracks and grids `--rule`; labels mono meta. When greyscale cannot tell the groups apart, use the categorical colours (3.6).
 - **One scale per chart.** Label only values the chart reaches.
 - **Distinguishing series without colour:**
   1. `--ink` solid;
@@ -412,9 +453,9 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 
 **Before delivering a page:**
 1. The build prints no warnings.
-2. Prose stays in the column, and wide content uses `.wide`.
+2. Prose stays in the column, and wide content uses `.wide` (or the page uses `layout: wide`).
 3. Every signal colour sits beside a glyph or a word.
-4. No raw colours in page CSS; tokens only.
+4. No raw colours in page CSS; tokens only. Any rule the page bends has a comment saying why.
 5. Example data is labelled.
 6. If you can render the page, check it at 390px and 1400px, in both themes, by keyboard, and with reduced motion.
 
@@ -423,10 +464,12 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 | Do | Don't |
 |---|---|
 | Use one ink at varying strengths | Add an accent colour, gradients or brand hues |
+| Use the categorical colours when greyscale cannot tell groups apart | Colour groups that greyscale already separates, or use a signal colour as a series |
 | Use signal colours for status, with a glyph or word | Colour links, headings, icons or decoration |
 | Separate with hairlines and whitespace | Wrap everything in cards with shadows |
 | Keep prose in the 36rem column | Stretch text to fill wide screens |
 | Let wide content grow into the right margin | Centre wide blocks over the contents rail |
+| Give apps, dashboards and trackers `layout: wide` | Squeeze a tool into the reading column, or centre a narrow heading over a wide block |
 | Use Outfit 600 for every heading | Mix heading weights or set headings in the serif |
 | Use italic Lora for commentary | Set whole passages of content in italic |
 | Put metadata in mono | Use mono for prose or headings |
@@ -440,3 +483,31 @@ How to build a page is in `DESIGN.md`. These constraints apply when a page is pu
 | End long pages with "Back to top" alone | Add colophons, credits or "made with" lines |
 | Start the first paragraph plainly | Add drop caps or other ornaments |
 | Label example data | Present invented figures as real |
+
+---
+
+## 15. Bending the rules
+
+These rules serve reading. A page that is a tool rather than a document may bend some of them where that makes it work better.
+
+**May bend:**
+
+- **Width and density.** `layout: wide` (5.7) for apps, dashboards and trackers.
+- **Colour for identity.** The categorical colours (3.6), only when greyscale cannot tell the groups apart.
+- **Component sizes.** A page `<style>` may change the size, spacing and layout of components to fit its content: wrap a column, shorten a tile, widen a side sheet.
+
+**Never bends:**
+
+- Tokens only. No raw colours in page CSS or inline styles.
+- The three typefaces, and the four voices with one job each.
+- Signal colours are for status only, beside a glyph or a word.
+- Light and dark get equal care.
+- No ornament, gradients or brand colour, and no shadows except on dialogs.
+- Accessibility (section 11) and the writing rules (section 12).
+
+**How to bend:**
+
+1. Bend the fewest rules that solve the problem, and keep everything else as written.
+2. Say why in a comment beside the change, for example `/* Graph: categorical colours, because six sections overlap in a network */`.
+3. Check the result in both themes and at phone width, as for any page.
+4. If the same bend turns up in more than one page, make it part of the system here, as `layout: wide` and the categorical colours were.
