@@ -1,0 +1,56 @@
+<!--
+title: @@TITLE@@
+lede: What the app is for, in one italic sentence.
+meta: App
+date: today
+-->
+
+<section class="section">
+  <h2>Board</h2>
+  <div class="shell wide">
+    <header class="shell-bar">
+      <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="#">Workspace</a></li><li aria-current="page">Project</li></ol></nav>
+      <div class="segmented" role="group" aria-label="View" data-pressed-group id="viewSwitch">
+        <button type="button" aria-pressed="true" data-value="board">{{icon:board}}Board</button>
+        <button type="button" aria-pressed="false" data-value="list">{{icon:list}}List</button>
+      </div>
+    </header>
+    <div class="shell-body">
+      <aside class="shell-side" aria-label="Filter tasks">
+        <p class="spaced-label">Tasks</p>
+        <ul class="side-nav" data-pressed-group id="whoFilter">
+          <li><button type="button" aria-pressed="true" data-value="all">{{icon:inbox}}All tasks<span class="count">3</span></button></li>
+          <li><button type="button" aria-pressed="false" data-value="AL">{{icon:user}}Ada’s<span class="count">2</span></button></li>
+        </ul>
+      </aside>
+      <div class="shell-main" id="shellMain"></div>
+    </div>
+  </div>
+  <p class="caption">Example tasks. Switch views, or filter by person.</p>
+</section>
+
+<script>
+const TASKS = [
+  { t: 'Write the brief', s: 'todo', who: 'AL', tag: 'Docs', due: '24/11' },
+  { t: 'Review the draft', s: 'doing', who: 'GH', tag: 'Review', due: '23/11' },
+  { t: 'Set up the repo', s: 'done', who: 'AL', tag: 'Core', due: '21/11' }
+];
+const COLS = [['todo', 'To do'], ['doing', 'Doing'], ['done', 'Done']];
+let view = 'board', who = 'all';
+const avatar = w => `<span class="avatar" title="${w}">${w}</span>`;
+function renderShell() {
+  const list = TASKS.filter(t => who === 'all' || t.who === who);
+  $('#shellMain').innerHTML = view === 'board'
+    ? '<div class="board">' + COLS.map(([k, label]) => {
+        const items = list.filter(t => t.s === k);
+        return `<div class="board-col"><p class="board-head"><span>${label}</span><span>${items.length}</span></p>` +
+          items.map(t => `<article class="task${k === 'done' ? ' is-done' : ''}"><p class="task-title">${t.t}</p>` +
+            `<p class="task-meta"><span>${t.tag}</span><span class="due">${icon('calendar')}${t.due}</span>${avatar(t.who)}</p></article>`).join('') + '</div>';
+      }).join('') + '</div>'
+    : '<table class="table-compact"><thead><tr><th scope="col">Task</th><th scope="col">Tag</th><th scope="col" class="num">Due</th><th scope="col">Who</th></tr></thead><tbody>' +
+      list.map(t => `<tr><td>${t.t}</td><td class="mono">${t.tag}</td><td class="num mono">${t.due}</td><td>${avatar(t.who)}</td></tr>`).join('') + '</tbody></table>';
+}
+$('#viewSwitch').addEventListener('change', e => { view = e.detail; renderShell(); });
+$('#whoFilter').addEventListener('change', e => { who = e.detail; renderShell(); });
+renderShell();
+</script>

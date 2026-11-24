@@ -1,0 +1,73 @@
+<!--
+title: @@TITLE@@
+lede: What the dashboard tracks, in one italic sentence. Say if the figures are examples.
+meta: Dashboard · Example data
+date: today
+-->
+
+<section class="section">
+  <h2>Summary</h2>
+  <div class="stats wide">
+    <div class="stat">
+      <p class="spaced-label">First metric</p>
+      <p class="stat-value">18,240</p>
+      <p class="stat-delta is-good"><span aria-hidden="true">▲</span> 8.3% <span class="vs">vs last month</span></p>
+      <svg class="spark" data-spark="10,11,12,13,14,15,14,14,16,17,18" aria-hidden="true"></svg>
+    </div>
+    <div class="stat">
+      <p class="spaced-label">Second metric</p>
+      <p class="stat-value">41%</p>
+      <p class="stat-delta is-bad"><span aria-hidden="true">▲</span> 3 pts <span class="vs">vs last month</span></p>
+      <svg class="spark" data-spark="44,43,43,42,40,39,39,38,38,38,41" aria-hidden="true"></svg>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Trend</h2>
+  <figure class="wide">
+    <div class="chart" id="trendChart" role="img" aria-label="Line chart of the first metric by month. Example data."></div>
+    <figcaption><span>First metric by month. Example data.</span><span class="legend"><span class="key"></span>This year<span class="key prev"></span>Last year</span></figcaption>
+  </figure>
+</section>
+
+<section class="section">
+  <h2>Activity</h2>
+  <div class="band full"><div class="band-inner">
+    <div class="heatmap" id="heatmap" role="img" aria-label="Heatmap of daily activity over a year. Example data."></div>
+    <div class="heat-foot"><span>Daily activity over the past year. Example data.</span>
+      <span class="heat-legend">Less <span class="hm-cell"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span><span class="hm-cell l3"></span><span class="hm-cell l4"></span> More</span></div>
+  </div></div>
+</section>
+
+<section class="section">
+  <h2>Detail</h2>
+  <div class="table-tools">
+    <div class="search">{{icon:search}}<label for="q" class="vh">Search rows</label>
+      <input type="search" id="q" placeholder="Search" autocomplete="off" data-filter="detail" data-count="detailCount" data-empty="detailEmpty" data-noun="rows"></div>
+    <span class="hint" id="detailCount"></span>
+  </div>
+  <div class="table-scroll wide">
+    <table class="table-compact" id="detail">
+      <thead><tr><th scope="col">Name</th><th scope="col" class="num">Value</th></tr></thead>
+      <tbody><tr><td>First row</td><td class="num mono">0</td></tr></tbody>
+    </table>
+    <div class="empty" id="detailEmpty" hidden>
+      <span class="empty-icon">{{icon:search}}</span>
+      <p class="empty-title">No rows match “<span data-query></span>”</p>
+      <p>Try a shorter word, or clear the search.</p>
+      <button type="button" class="btn btn-secondary btn-sm" data-clear>Clear search</button>
+    </div>
+  </div>
+</section>
+
+<script>
+redrawers.push(lineChart($('#trendChart'), {
+  labels: MONTHS, max: 20, ticks: [0, 5, 10, 15, 20], format: v => (v ? `${v}k` : '0'),
+  series: [
+    { name: 'This year', cls: 'now', values: [10.4, 11.2, 12.0, 12.9, 13.6, 14.8, 14.1, 13.9, 15.6, 16.8, 18.2] },
+    { name: 'Last year', cls: 'prev', values: [9.2, 9.8, 10.5, 11.0, 11.8, 12.1, 11.4, 11.0, 12.6, 13.4, 14.0, 13.1] }
+  ]
+}));
+heatmap($('#heatmap'), { values: Array.from({ length: 364 }, (_, i) => Math.round(Math.abs(Math.sin(i * 1.7)) * 10)), end: new Date(), unit: ' sessions' });
+</script>

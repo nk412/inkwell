@@ -1,0 +1,15 @@
+/* ==========================================================
+   Module: Diagrams (Mermaid)
+   ========================================================== */
+
+.mermaid-box {
+  display: flex;
+  justify-content: center;
+  min-height: 8rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  background: var(--surface);
+  border-radius: 4px;
+}
+.mermaid-box svg { max-width: 100%; height: auto; }
+.mermaid-box pre { margin: 0; padding: 0; background: none; }
